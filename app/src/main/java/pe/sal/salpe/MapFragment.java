@@ -1,6 +1,5 @@
 package pe.sal.salpe;
 
-import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -27,14 +26,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MapFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link MapFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -42,13 +33,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private OnFragmentInteractionListener mListener;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-
-     * @return A new instance of fragment MapFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static MapFragment newInstance() {
         MapFragment fragment = new MapFragment();
         Bundle args = new Bundle();
@@ -63,15 +47,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            //
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.map_fragment, container, false);
 
         SupportMapFragment mapFragment = ((SupportMapFragment) getChildFragmentManager()
@@ -95,16 +75,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
@@ -121,8 +92,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mMap.moveCamera(center);
         mMap.animateCamera(zoom);
 
+        setMarkers();
+
+    }
+
+    public void setMarkers(){
+        mMap.clear();
+
         String url = "http://salpe-dev.elasticbeanstalk.com/mobile/events/";
 
+        requestEvents(url);
+    }
+
+    public void setMarkers(int eventTypeId){
+        mMap.clear();
+
+        String url = "http://salpe-dev.elasticbeanstalk.com/mobile/events/?event_type=";
+        url += Integer.toString(eventTypeId);
+
+        requestEvents(url);
+    }
+
+    private void requestEvents(String url){
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         JsonArrayRequest jsObjRequest = new JsonArrayRequest
@@ -159,7 +150,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(15000, 1,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(jsObjRequest);
-
     }
 
 }
