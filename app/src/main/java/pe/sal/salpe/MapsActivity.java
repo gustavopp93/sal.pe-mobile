@@ -56,6 +56,12 @@ public class MapsActivity extends AppCompatActivity{
                     public void onResponse(JSONArray response) {
 
                         final ArrayList<EventType> eventTypes = new ArrayList<EventType>();
+
+                        EventType defaultEventType = new EventType();
+                        defaultEventType.set_default(true);
+                        defaultEventType.setName("Todos");
+                        eventTypes.add(defaultEventType);
+
                         for(int i=0; i < response.length(); i++){
 
                             try {
@@ -78,7 +84,12 @@ public class MapsActivity extends AppCompatActivity{
                             @Override
                             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                                 EventType currentEventType = eventTypes.get(i);
-                                mapFragment.setMarkers(currentEventType.getId());
+                                if (currentEventType.is_default()){
+                                    mapFragment.setMarkers();
+                                } else {
+                                    mapFragment.setMarkers(currentEventType.getId());
+                                }
+
                             }
                         });
 

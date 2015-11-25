@@ -5,6 +5,7 @@ public class EventType {
 
     private int id;
     private String name;
+    private boolean _default;
 
     public int getId() {
         return id;
@@ -20,5 +21,13 @@ public class EventType {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean is_default() {
+        return _default;
+    }
+
+    public void set_default(boolean _default) {
+        this._default = _default;
     }
 }

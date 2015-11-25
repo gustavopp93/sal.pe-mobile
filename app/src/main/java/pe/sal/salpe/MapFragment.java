@@ -87,7 +87,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         CameraUpdate center= CameraUpdateFactory.newLatLng(new LatLng(-12.150498774159367,
                 -76.99333564785161));
-        CameraUpdate zoom = CameraUpdateFactory.zoomTo(10);
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(12);
 
         mMap.moveCamera(center);
         mMap.animateCamera(zoom);
