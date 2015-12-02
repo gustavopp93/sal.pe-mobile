@@ -8,7 +8,21 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import pe.sal.salpe.model.Event;
 
@@ -25,10 +39,7 @@ public class EventActivity extends AppCompatActivity {
 
         ActionBar actionBarObj = getSupportActionBar();
 
-
-
-
-        Event event = (Event) getIntent().getExtras().get("EVENT");
+        event = (Event) getIntent().getExtras().get("EVENT");
 
         ImageView imgEvent = (ImageView)findViewById(R.id.imageEvent);
 
@@ -36,19 +47,66 @@ public class EventActivity extends AppCompatActivity {
                 .load(event.getAvatar())
                 .into(imgEvent);
 
-        TextView eventName = (TextView)findViewById(R.id.eventName);
-        eventName.setText(event.getName());
-
 
         actionBarObj.setTitle(event.getName());
         actionBarObj.setDisplayHomeAsUpEnabled(true);
         actionBarObj.setHomeButtonEnabled(true);
 
-        TextView eventDescription = (TextView)findViewById(R.id.eventDescription);
-        eventDescription.setText(event.getDescription());
+        String url = "http://salpe-dev.elasticbeanstalk.com/mobile/event/";
+        url += Integer.toString(event.getEventId());
 
-        TextView eventExtraData = (TextView)findViewById(R.id.eventExtraData);
-        eventExtraData.setText(event.getExtraData());
+        RequestQueue queue = Volley.newRequestQueue(EventActivity.this);
+
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            event.setDescription(response.getString("description"));
+                            event.setExtraData(response.getString("extra_data"));
+                            event.setEventType(response.getString("event_type"));
+                            event.setOrganization(response.getString("organization"));
+                            event.setStartDate(response.getString("start_date"));
+
+
+                            TextView eventName = (TextView)findViewById(R.id.eventName);
+                            eventName.setText(event.getName());
+
+
+                            TextView eventDescription = (TextView)findViewById(R.id.eventDescription);
+                            eventDescription.setText(event.getDescription());
+
+                            TextView eventExtraData = (TextView)findViewById(R.id.eventExtraData);
+                            eventExtraData.setText(event.getExtraData());
+
+                            TextView eventType = (TextView)findViewById(R.id.eventType);
+                            eventType.setText(event.getEventType());
+
+                            TextView eventOrganization = (TextView)findViewById(R.id.eventOrganization);
+                            eventOrganization.setText(event.getOrganization());
+
+                            TextView eventStartDate = (TextView)findViewById(R.id.eventStartDate);
+                            eventStartDate.setText(event.getStartDate());
+
+                        } catch (Exception e) {
+                            //
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //
+
+                    }
+                });
+        jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(15000, 1,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(jsObjRequest);
+
+
 
     }
 

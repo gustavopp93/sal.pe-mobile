@@ -9,6 +9,9 @@ public class Event implements Serializable {
     private String description;
     private String avatar;
     private String extraData;
+    private String startDate;
+    private String eventType;
+    private String organization;
 
 
     public int getEventId() {
@@ -49,5 +52,29 @@ public class Event implements Serializable {
 
     public void setExtraData(String extraData) {
         this.extraData = extraData;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
+    }
+
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
     }
 }

@@ -223,8 +223,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                 Event event = new Event();
                                 event.setEventId(tmpObj.getInt("id"));
                                 event.setName(tmpObj.getString("name"));
-                                event.setDescription(tmpObj.getString("description"));
-                                event.setExtraData(tmpObj.getString("extra_data"));
+//                                event.setDescription(tmpObj.getString("description"));
+//                                event.setExtraData(tmpObj.getString("extra_data"));
                                 event.setAvatar(tmpObj.getString("avatar"));
 
                                 LatLng place = new LatLng(tmpObj.getDouble("latitude"),
