@@ -1,8 +1,15 @@
 package pe.sal.salpe;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -24,6 +31,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -33,6 +41,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
 
 import pe.sal.salpe.model.Event;
 
@@ -103,9 +112,51 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         public void onFragmentInteraction(Uri uri);
     }
 
+
+    LocationManager mLocationManager;
+
+    private Location getLastKnownLocation() {
+        mLocationManager = (LocationManager) getActivity().getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        List<String> providers = mLocationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            Location l = mLocationManager.getLastKnownLocation(provider);
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                // Found best last known location: %s", l);
+                bestLocation = l;
+            }
+        }
+        return bestLocation;
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        Location myLocation = getLastKnownLocation();
+
+        if (myLocation != null) {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                    new LatLng(myLocation.getLatitude(), myLocation.getLongitude()), 13));
+
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()))      // Sets the center of the map to location user
+                    .zoom(17)                   // Sets the zoom
+                    .build();                   // Creates a CameraPosition from the builder
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+        } else {
+            CameraUpdate center= CameraUpdateFactory.newLatLng(new LatLng(-12.150498774159367,
+                    -76.99333564785161));
+            CameraUpdate zoom = CameraUpdateFactory.zoomTo(12);
+
+            mMap.moveCamera(center);
+            mMap.animateCamera(zoom);
+        }
+
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -130,12 +181,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        CameraUpdate center= CameraUpdateFactory.newLatLng(new LatLng(-12.150498774159367,
-                -76.99333564785161));
-        CameraUpdate zoom = CameraUpdateFactory.zoomTo(12);
 
-        mMap.moveCamera(center);
-        mMap.animateCamera(zoom);
 
         setMarkers();
 
